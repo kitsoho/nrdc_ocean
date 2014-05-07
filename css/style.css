@@ -4,11 +4,11 @@ body,html {
 	color: #222;
 	background-color: white;
 	font-size: 12pt;
-	font-family: Arial, sans-serif;
+	
 }
 
 body {
-	max-width: 700px;
+	
 	margin: 0 auto;
 	line-height: 1.5;
 	margin-bottom: 2em;
@@ -48,10 +48,10 @@ h2 {
 	margin: 25px auto;
 	text-align: center;
 }
-#map {
+/*#map {
 	height: 500px;
 	background-color: #C96;
-}
+}*/
 
 #values {
 	font-size: 10pt;
