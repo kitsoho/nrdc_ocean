@@ -13,10 +13,10 @@ a:hover {
 .btn-default,
 .btn-default:hover,
 .btn-default:focus {
-  color: #333;
-  text-shadow: none; /* Prevent inheritence from `body` */
-  background-color: #fff;
-  border: 1px solid #fff;
+	/* [disabled]color: #333; */
+	/* [disabled]text-shadow: none; */ /* Prevent inheritence from `body` */
+	/* [disabled]background-color: #fff; */
+	/* [disabled]border: 1px solid #fff; */
 }
 
 
@@ -30,10 +30,19 @@ body {
 	/* [disabled]background-color: #588D05; */
 }
 body {
-	color: #fff;
+	/* [disabled]color: #fff; */
 	/* [disabled]text-align: center; */
 	/* [disabled]text-shadow: 0 1px 3px rgba(0,0,0,.5); */
 	/* [disabled]box-shadow: inset 0 0 100px rgba(0,0,0,.5); */
+}
+
+
+#map {
+	height: 100%;
+	/* [disabled]background-color: #FFF; */
+	width: 100%;
+	position: relative;
+	z-index: 1;
 }
 
 /* Extra markup and styles for table-esque vertical and horizontal centering */
@@ -161,24 +170,20 @@ body {
 }
 
 
-#map {
-	height: 100%;
-	/* [disabled]background-color: #FFF; */
-	width: 100%;
-	position: relative;
-	z-index: 1;
+#tile-select{
+	right: 20px;
+	float: right;
 }
 
-
 select{
-	position: relative;
-	float: left;
-	width: 80%;
+	/* [disabled]position: relative; */
+	/* [disabled]float: left; */
+	/* [disabled]width: 80%; */
 }
 
 input[type=button] {
-	position: relative;
-	z-index: 9;
-	float: left;
-	width: 20%;
+	/* [disabled]position: relative; */
+	/* [disabled]z-index: 9; */
+	/* [disabled]float: left; */
+	/* [disabled]width: 20%; */
 }
