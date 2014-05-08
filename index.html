@@ -20,8 +20,7 @@
     <!-- Scripts
     ================================================== -->
     <script src="js/leaflet.js"></script>
-    
-    <!--<script src="js/rivers_TEMP.js" type="text/javascript"></script>-->
+    <script src="js/rivers_TEMP.js" type="text/javascript"></script>
     <script src="js/bioregions_TEMP.js" type="text/javascript"></script>
     <script src="js/layerlist.js"></script>
     
@@ -29,6 +28,7 @@
     <!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
+    <script src="http://code.jquery.com/jquery-latest.js" type="text/javascript" ></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
     <script src="js/bootstrap.min.js"></script>
     <script src="js/docs.min.js"></script>
@@ -115,9 +115,9 @@
         
         
         <div class="well">
-			<div class="btn-group btn-group-sm">
-            	<button type="button" class="btn btn-default">Bioregions</button>
-  				<button type="button" class="btn btn-default">Rivers</button>
+			<div class="btn-group btn-group-sm" id="btn-select">
+            	<button type="button" class="btn btn-default" id="bioregion">Bioregions</button>
+  				<button type="button" class="btn btn-default" id="rivers">Rivers</button>
            	</div>
        	</div><!-- /.well -->
         
@@ -127,9 +127,9 @@
   			<div class="panel-body">
             	<div class="form-group">
       				<label for="select">Sub-Heading?</label>
-      				<select multiple class="form-control">
- 						<option>Bioregions</option>
-  						<option>Rivers</option>
+      				<select multiple class="form-control" id="selectpicker" >
+ 						<option val="bioregion">Bioregions</option>
+  						<option val="river">Rivers</option>
   						<option>Etc</option>
   						<option>4</option>
   						<option>5</option>
@@ -147,22 +147,23 @@
   			<div class="panel-body">
             	<form class="form-horizontal">
   					<fieldset>
-                    	<div class="form-group">
+                    	<div class="form-group" id="category2">
       						<label class="col-sm-2 control-label">Radios</label>
       						<div class="col-sm-10">
         						<div class="radio">
           						<label>
-          							<input type="radio" name="optionsRadios" id="optionsRadios1" value="option1" checked="">
+          							<input type="radio" name="optionsRadios" id="bioregion" checked="">
             						Option one is this
           						</label>
         						</div>
         						<div class="radio">
           						<label>
-            						<input type="radio" name="optionsRadios" id="optionsRadios2" value="option2">
+            						<input type="radio" name="optionsRadios" id="rivers">
             						Option two is this
           						</label>
         						</div>
       						</div>
+                            <button type="submit" class="btn btn-default btn-xs" id="submit">Submit</button>
     					</div>
     <div class="form-group">
       <label for="select" class="col-sm-2 control-label">Selects</label>
@@ -177,11 +178,13 @@
         
       </div>
     </div>
+    
+    
     <div class="form-group">
       <div class="col-lg-10 col-lg-offset-2">
       	<div class="btn-group btn-group-xs">
         	<button class="btn btn-default">Cancel</button>
-        	<button type="submit" class="btn btn-primary">Submit</button>
+        	<button type="submit" class="btn btn-primary" id="submit2">Submit</button>
         </div>
       </div>
     </div>
@@ -222,6 +225,10 @@
 
 	<script>
 	
+	<!-- ================================================== -->
+	<!-- Functions -->
+	<!-- ================================================== -->	
+	
 	function bioregionStyle(feature) {
 		return {weight: 1.2, opacity: 1, color: "#DF5A49", fillOpacity: 0.6, fillColor: "#E27A3F"};
 	}
@@ -238,6 +245,8 @@
 	}
 	
 	
+	
+	
 	function onEachFeature(feature, layer) {
 		var popupContent = "<p>Bioregion:&nbsp;" + feature.properties.Name + "</p>"
 		
@@ -247,27 +256,48 @@
 		
 		layer.bindPopup(popupContent);
 	}
+	
+	
+	
+//	function getJson(simp){  //Removed unneeded arguments here
+//    	var url = 'js/' + simp + '.js';
+//    	map.removeLayer(geojsonLayer);
+//    	//geojsonLayer.clearLayers();  I don't believe this needed.
+//    	$.getJSON(url, function(data){
+//        	geojsonLayer = L.geoJson(data, {
+//            	style: defaultStyle,
+//            	onEachFeature: onEachFeature
+//        });
+//        geojsonLayer.addTo(map);
+//    	});
+//	}
 
 
+
+	<!-- ================================================== -->
+	<!-- Create the map and additional components -->
+	<!-- ================================================== -->
 
 	var map = createMap('map');
-
-
-	var sel = document.getElementById('llselect');
-	var layerKeys = window.layerList.getSortedKeys();
-
-	for( var i = 0; i < layerKeys.length; i++ ) {
-    	if( !window.layerList.requiresKey(layerKeys[i]) ) {
-        	var opt = document.createElement('option');
-        	opt.innerHTML = opt.value = layerKeys[i];
-        	sel.appendChild(opt);
-    	}
-	}
+	
+	
+	<!-- Not sure if we'll need these -->
+	var legend;
+	var info;
+	var scale;
+	
+	
 
 
 
-	<!-- Add the geojson bioregions data -->
-	bioregion = L.geoJson(bioregion, {
+
+
+	<!-- ================================================== -->
+	<!-- Add Layers -->
+	<!-- ================================================== -->
+	
+	<!-- geojson bioregions data -->
+	bioregion = L.geoJson(bioData, {
 		style: bioregionStyle,
 		filter: function (feature, layer) {
 			if (feature.properties) {
@@ -280,34 +310,159 @@
 		}).addTo(map);
 		
 		
-	<!-- Add the geojson rivers data -->
-//	rivers = L.geoJson(rivers, {
-//		style: riverStyle,
-//		filter: function (feature, layer) {
-//			if (feature.properties) {
-//				// If the property "underConstruction" exists and is true, return false (don't render features under construction)
-//				return feature.properties.underConstruction !== undefined ? !feature.properties.underConstruction : true;
-//			}
-//			return false;
-//			}
-//			//onEachFeature: onEachFeature
-//		}).addTo(map);
+	<!-- geojson rivers data -->
+	rivers = L.geoJson(rivers, {
+		style: riverStyle,
+		filter: function (feature, layer) {
+			if (feature.properties) {
+				// If the property "underConstruction" exists and is true, return false (don't render features under construction)
+				return feature.properties.underConstruction !== undefined ? !feature.properties.underConstruction : true;
+			}
+			return false;
+			}
+			//onEachFeature: onEachFeature
+		}).addTo(map);
 		
 		
+		
+		
+		
+		
+		
+	<!-- ================================================== -->
+	<!-- Do stuff -->
+	<!-- ================================================== -->
+		
+
+	<!-- For viewing different osm tiles -->
+	var sel = document.getElementById('llselect');
+	var layerKeys = window.layerList.getSortedKeys();
+
+	for( var i = 0; i < layerKeys.length; i++ ) {
+    	if( !window.layerList.requiresKey(layerKeys[i]) ) {
+        	var opt = document.createElement('option');
+        	opt.innerHTML = opt.value = layerKeys[i];
+        	sel.appendChild(opt);
+    	}
+	}
 	
+	
+	
+	<!-- Add the inital layers and switch tiles if selected -->
 	L.DomEvent.on(document.getElementById('lladd'), 'click', function() {
 		map.eachLayer(function(layer) {
 			map.removeLayer(layer);
 			map.removeLayer(bioregion);
-			<!--map.removeLayer(rivers);-->
+			map.removeLayer(rivers);
 		});
     		map.addLayer(window.layerList.getLeafletLayer(sel.value));
 			map.addLayer(bioregion);
-			<!--map.addLayer(rivers);-->
+			map.addLayer(rivers);
 		});
 		
+	
 
-		//bioregions.bringToFront();
+
+	<!-- ================================================== -->
+	<!-- Temporary -->
+	<!-- ================================================== -->
+	
+		
+//	$('#btn-select .btn').click(function(){
+//		
+//		//var myID = $(this).attr('id');
+//	
+//		//alert (myID)
+//		
+//		//var layer = e.target(myID);
+//		
+//		map.removeLayer(window[$(this).attr('id')]);	
+//		
+//	});
+	
+	
+	
+	
+	$('input[name="optionsRadios"]').change(function () {
+    // Remove unchecked layers
+    $('input:radio[name="optionsRadios"]:not(:checked)').each(function () {
+        map.removeLayer(window[$(this).attr('id')]);
+    });
+    // Add checked layer
+    $('input:radio[name="optionsRadios"]:checked').each(function () {
+        map.addLayer(window[$(this).attr('id')]);
+    });
+});
+ 
+$('input:checkbox[name="overlayLayers"]').change(function () {
+    var layers = [];
+ 
+    function sortByKey(array, key) {
+        return array.sort(function (a, b) {
+            var x = a[key];
+            var y = b[key];
+            return ((x < y) ? -1 : ((x > y) ? 1 : 0));
+        });
+    }
+    if ($('#' + $(this).attr('id')).is(':checked')) {
+        $('input:checkbox[name="overlayLayers"]').each(function () {
+            // Remove all overlay layers
+            map.removeLayer(window[$(this).attr('id')]);
+            if ($('#' + $(this).attr('id')).is(':checked')) {
+                // Add checked layers to array for sorting
+                layers.push({
+                    'z-index': $(this).attr('z-index'),
+                    'layer': $(this)
+                });
+            }
+        });
+        // Sort layers array by z-index
+        var orderedLayers = sortByKey(layers, 'z-index');
+        // Loop through ordered layers array and add to map in correct order
+        $.each(orderedLayers, function () {
+            map.addLayer(window[$(this)[0].layer[0].id]);
+        });
+    } else {
+        // Simply remove unchecked layers
+        map.removeLayer(window[$(this).attr('id')]);
+    }
+});
+	
+		
+	
+	
+	
+		
+//		
+//		 $('#submit').click(function() {
+//			 alert ('blah!')
+//			 $('.selectpicker').selectpicker('hide');
+//		 });
+		
+		
+//	$('#submit').click(function(){
+//		
+//		//alert ('blah2!')
+//		
+//		var myID = $('input[name=optionsRadios]:checked', '#category2').val()
+//		
+//		
+//		//alert (myID)
+//		
+////		if (map.hasLayer(myID)){
+////			alert (myID)
+////		}
+//		
+//	});
+
+
+		
+		
+	
+//	$('#lladd').click(function () {
+//		//alert ("blah!")
+//		bioregion.bringToFront();
+//	});
 
 
 
