@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Leaflet multilayer example | CartoDB.js</title>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+    <link rel="shortcut icon" href="http://cartodb.com/assets/favicon.ico" />
+    <style>
+      html, body, #map {
+        height: 100%;
+        padding: 0;
+        margin: 0;
+      }
+    </style>
+ 
+    <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/themes/css/cartodb.css" />
+    <!--[if lte IE 8]>
+        <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/themes/css/cartodb.ie.css" />
+    <![endif]-->
+    
+    
+    <script src="js/layerlist.js"></script>
+ 
+  </head>
+  <body>
+    <div id="map"></div>
+ 
+    <!-- include cartodb.js library -->
+    <script src="http://libs.cartocdn.com/cartodb.js/v3/cartodb.js"></script>
+    <script>
+	
+	
+	        // create leaflet map
+        var map = L.map('map', { 
+          zoomControl: false,
+          center: [52, -115, 0],
+          zoom: 3
+        })
+		
+		
+		map.addLayer(window.layerList.getLeafletLayer('OpenStreetMap'));
+ 
+        // add a base layer
+//        L.tileLayer('http://tile.stamen.com/toner/{z}/{x}/{y}.png', {
+//          attribution: 'Stamen'
+//        }).addTo(map);
+//		
+		
+		// add cartodb layer with one sublayer
+        cartodb.createLayer(map, 'http://spatial.cartodb.com/api/v2/viz/3abc1b26-d77e-11e3-b500-0e10bcd91c2b/viz.json')
+        .addTo(map)
+//        .done(function(layer) {
+ //         setTimeout(function() { layer.hide() }, 5000)
+//        });
+		
+		
+	
+//		function createMap(div, coords) {
+//    	var map = L.map(div, { scrollWheelZoom: false }).setView([52, -115], 3);
+//    	map.addLayer(window.layerList.getLeafletLayer('OpenStreetMap'));
+//    	return map;
+//	}
+//	
+//	
+//	var map = createMap('map');
+    //var map = L.map('map').setView([45, -93.4], 11);      
+     
+    //var mapboxUrl = 'http://a.tiles.mapbox.com/v3/krdyke.map-4s0hcgwp/{z}/{x}/{y}.png';
+    //var mapbox = new L.TileLayer(mapboxUrl,{
+    //     maxZoom:18,
+    //     attribution:'Map imagery from Mapbox and &copy OpenStreetMap',
+    //     subdomains:['a','b','c','d']
+     //   });
+     
+    //map.addLayer(mapbox);
+     
+	//var layerUrl = 'http://spatial.cartodb.com/api/v2/viz/3abc1b26-d77e-11e3-b500-0e10bcd91c2b/viz.json';
+//	cartodb.createLayer(map, layerUrl, function(layer) {
+//     	map.addLayer(layer);
+//	});
+	
+	
+//	cartodb.createLayer(map, layerUrl).addTo(map).done(function(layer) {
+//  		layer.setZIndex(2);
+//	});
+
+    </script>
+</body>
+</html>
