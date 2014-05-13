@@ -11,6 +11,14 @@
         padding: 0;
         margin: 0;
       }
+	  
+	  .legend{
+		  background-color:#3333FF;
+		  position:relative;
+		  z-index:10;
+		  width:200px;
+		  height:150px;
+	  }
     </style>
  
     <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/themes/css/cartodb.css" />
@@ -39,6 +47,18 @@
 		
 		
 		map.addLayer(window.layerList.getLeafletLayer('OpenStreetMap'));
+		
+		
+		legend = L.control({position: 'bottomright'});
+		
+		legend.onAdd = function (map) {
+			var div = L.DomUtil.create('div', 'legend');
+   		 	div.innerHTML +=
+    		'<h2>ksagjakdjf</h2>';
+		return div;
+		};
+		
+		legend.addTo(map);
  
         // add a base layer
 //        L.tileLayer('http://tile.stamen.com/toner/{z}/{x}/{y}.png', {

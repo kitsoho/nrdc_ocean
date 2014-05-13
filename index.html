@@ -11,7 +11,7 @@
     ================================================== -->
     <link rel="stylesheet" href="css/bootstrap.css">
     <link rel="stylesheet" href="css/cover.css">
-	<link rel="stylesheet" href="css/leaflet_mapbbcode.css">
+	<!--<link rel="stylesheet" href="css/leaflet_mapbbcode.css">-->
     <!--<link rel="stylesheet" href="css/style.css">-->
    	<link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/themes/css/cartodb.css" />
     <!--[if lte IE 8]>
@@ -19,7 +19,7 @@
     <![endif]-->
     <link rel="stylesheet" href="css/overrides.css">
     
-    
+  
     
     
     
@@ -258,7 +258,7 @@
 	//var map;
 	var latlong = [52, -115];
 	var zoom = 3;
-	var legend;
+	//var legend;
 	var info;
 	var scale;
 	
@@ -281,7 +281,7 @@
 		
 		
 		
-	<!-- geojson rivers data -->
+	<!-- Geojson rivers data -->
 	rivers = L.geoJson(rivers, {
 		style: riverStyle,
 		filter: function (feature, layer) {
@@ -313,7 +313,7 @@
 		
 		
 		
-	<!-- geojson bioregions data -->
+	<!-- Geojson bioregions data -->
 	bioregion = L.geoJson(bioData, {
 		style: bioregionStyle,
 		filter: function (feature, layer) {
@@ -373,13 +373,41 @@
 	<!-- Infowindow control -->
 	<!-- ================================================== -->
 	
-	info = L.control({position: 'bottomright'});	
+	var info = L.control();
+	
 	info.onAdd = function (map) {
-		
-		this._div = L.DomUtil.create('div', 'info');
+		this._div = L.DomUtil.create('div', 'info'); // create a div with a class "info"
 		this.update();
 		return this._div;
 	};
+	
+	// method that we will use to update the control based on feature properties passed
+	info.update = function (props) {
+    this._div.innerHTML = '<h4>Infowindow Title</h4>' +  (props ?
+        '<b>' + props.Name + '</b>'
+        : 'Hover over blah');
+	};
+
+	
+	info.addTo(map);
+		
+	
+	
+	
+	
+	<!-- ================================================== -->
+	<!-- Legend control -->
+	<!-- ================================================== -->
+	
+	legend = L.control({position: 'bottomright'});
+
+	legend.onAdd = function (map) {
+		var div = L.DomUtil.create('div', 'legend');
+		div.innerHTML += '<h4>Legend Title</h4>';
+	return div;
+	};
+	
+	//legend.addTo(map);
 
 
 
@@ -388,6 +416,14 @@
 	<!-- Temporary -->
 	<!-- ================================================== -->
 	
+	
+	
+	map.on('click', function(e) {
+    	//alert(e.latlng);
+	});
+
+
+
 		
 //	$('#btn-select .btn').click(function(){
 //		
@@ -519,7 +555,48 @@ $('input:checkbox[name="overlayLayers"]').change(function () {
 		}
 		
 		layer.bindPopup(popupContent);
+		
+		layer.on({
+        	mouseover: highlightFeature,
+        	mouseout: resetHighlight
+			//click: zoomToFeature
+    	});
 	}
+	
+	
+	
+	
+	function highlightFeature(e) {
+    	var layer = e.target;
+
+    	layer.setStyle({
+        	weight: 2,
+        	color: '#666',
+        	dashArray: '',
+        	fillOpacity: 0.7
+    	});
+		
+		info.update(layer.feature.properties);
+
+    if (!L.Browser.ie && !L.Browser.opera) {
+		layer.bringToFront();
+    	}
+	}
+	
+	
+	
+	// Currently set to bioregions only
+	function resetHighlight(e) {
+    	bioregion.resetStyle(e.target);
+		info.update();
+	}
+	
+	
+	
+	function zoomToFeature(e) {
+    	map.fitBounds(e.target.getBounds());
+	}
+	
 	
 	
 	
@@ -544,13 +621,15 @@ $('input:checkbox[name="overlayLayers"]').change(function () {
 	
 	<!-- Add scalebar, info and legend -->
 	scale = L.control.scale({position: 'bottomright'}).addTo(map);
-	info.addTo(map);
+	legend.addTo(map);
+	//if(initSetting==1){	
+	//info.addTo(map);
+	
+	//}
 
 
 
 
-		
-		
 		
 
 	</script>
